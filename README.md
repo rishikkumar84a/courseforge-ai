@@ -19,15 +19,15 @@ Drop a topic. Get a full course. Powered by autonomous AI agents.
 - Automated content writing based on deep web research
 
 ## Architecture Diagram 
-`
+```
 USER INPUT -> [Orchestrator Agent]
                    |
                    |--> [Research Agent] -> [Curriculum Agent] -> [Content Agent] & [Quiz Agent] -> Aggregator -> MongoDB
-`
+```
 
 ## Prerequisites
-- Node.js > 18
-- Python > 3.11
+- Node.js >= 18
+- Python >= 3.11
 - Docker & docker-compose
 - MongoDB Atlas cluster
 - Groq API Key
