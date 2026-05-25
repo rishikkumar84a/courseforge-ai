@@ -1,4 +1,3 @@
-import pytest
 from models.course import Course, Module, Lesson, QuizQuestion
 
 def test_course_creation():
