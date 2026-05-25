@@ -2,9 +2,3 @@ fastapi
 uvicorn
 motor
 pydantic
-langchain
-langgraph
-langchain-groq
-langchain-community
-tavily-python
-duckduckgo-search
