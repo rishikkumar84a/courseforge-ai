@@ -133,3 +133,41 @@ def test_quiz_agent_returns_5_questions(mock_chat_groq_class):
     assert quiz.questions[0].correct_answer == "A"
     assert len(quiz.questions[0].options) == 4
 
+
+from backend.agents.orchestrator import build_orchestrator_graph, run_course_generation
+
+@patch("backend.agents.orchestrator.run_research_agent")
+@patch("backend.agents.orchestrator.run_curriculum_agent")
+@patch("backend.agents.orchestrator.run_content_agent")
+@patch("backend.agents.orchestrator.run_quiz_agent")
+def test_orchestrator_runs_full_pipeline(mock_quiz_agent, mock_content_agent, mock_curriculum_agent, mock_research_agent):
+    mock_research_agent.return_value = {"topic": "AI"}
+    
+    # Mock Curriculum
+    mock_curr = MagicMock()
+    mock_curr.model_dump.return_value = {
+        "course_title": "AI 101",
+        "modules": [
+            {"title": "M1", "lessons": [{"title": "L1", "description": "D1"}]}
+        ]
+    }
+    mock_curriculum_agent.return_value = mock_curr
+    
+    # Mock Content
+    mock_content = MagicMock()
+    mock_content.model_dump.return_value = {"content": "Lesson content"}
+    mock_content_agent.return_value = mock_content
+    
+    # Mock Quiz
+    mock_quiz = MagicMock()
+    mock_quiz.model_dump.return_value = {"questions": []}
+    mock_quiz_agent.return_value = mock_quiz
+    
+    final_output = run_course_generation("AI")
+    
+    assert final_output["topic"] == "AI"
+    assert final_output["curriculum"]["course_title"] == "AI 101"
+    assert len(final_output["lessons"]) == 1
+    assert final_output["lessons"][0]["lesson_title"] == "L1"
+    assert len(final_output["quizzes"]) == 1
+
