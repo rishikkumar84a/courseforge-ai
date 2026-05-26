@@ -72,3 +72,32 @@ def test_curriculum_agent_returns_5_modules(mock_chat_groq_class):
     assert len(curriculum.modules) == 5
     assert len(curriculum.modules[0].lessons) == 3
 
+
+from backend.agents.content_agent import run_content_agent, LessonContent
+
+@patch("backend.agents.content_agent.ChatGroq")
+def test_content_agent_returns_lesson_content(mock_chat_groq_class):
+    mock_llm_instance = MagicMock()
+    import json
+    expected_dict = {
+        "content": "This is a detailed 300 word explanation about Python...",
+        "key_points": ["Python is versatile", "Easy to learn"],
+        "examples": ["print(\"Hello World\")"],
+        "summary": "Basics of Python"
+    }
+    mock_llm_instance.invoke.return_value = AIMessage(content=json.dumps(expected_dict))
+    mock_chat_groq_class.return_value = mock_llm_instance
+    
+    test_research_data = {
+        "topic": "Python",
+        "key_concepts": [],
+        "facts": []
+    }
+    
+    content = run_content_agent("Intro to Django", "Learn MVC basics", test_research_data)
+    
+    assert content.content.startswith("This is a detailed")
+    assert "Easy to learn" in content.key_points
+    assert len(content.examples) == 1
+    assert content.summary == "Basics of Python"
+
