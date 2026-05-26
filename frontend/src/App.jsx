@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
+import CourseView from './pages/CourseView'
 
 function App() {
   return (
@@ -13,7 +14,8 @@ function App() {
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <Routes>
             <Route path="/" element={<Home />} />
-            {/* Will add course/:id and generating/:id routes in next features*/}
+            <Route path="/course/:id" element={<CourseView />} />
+            {/* Will add generating/:id routes in next features*/}
           </Routes>
         </div>
       </main>
