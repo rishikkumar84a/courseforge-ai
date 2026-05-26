@@ -36,3 +36,39 @@ def test_research_agent_exception_fallback():
         assert data["topic"] == "Test fallback"
         assert len(data["key_concepts"]) == 0
         assert "Error extracting data: Search API failed" in data["facts"][0]
+
+from backend.agents.curriculum_agent import run_curriculum_agent
+
+@patch("backend.agents.curriculum_agent.ChatGroq")
+def test_curriculum_agent_returns_5_modules(mock_chat_groq_class):
+    mock_llm_instance = MagicMock()
+    # Mock output matching 5 modules and 3 lessons each
+    import json
+    expected_dict = {
+        "course_title": "Test Course",
+        "description": "A test course",
+        "modules": [
+            {
+                "title": f"Module {i}",
+                "order": i,
+                "lessons": [
+                    {"title": f"Lesson {j}", "order": j, "description": "Desc"} for j in range(1, 4)
+                ]
+            } for i in range(1, 6)
+        ]
+    }
+    mock_llm_instance.invoke.return_value = AIMessage(content=json.dumps(expected_dict))
+    mock_chat_groq_class.return_value = mock_llm_instance
+    
+    test_research_data = {
+        "topic": "Testing",
+        "key_concepts": ["A", "B"],
+        "facts": ["Fact 1"]
+    }
+    
+    curriculum = run_curriculum_agent(test_research_data)
+    
+    assert curriculum.course_title == "Test Course"
+    assert len(curriculum.modules) == 5
+    assert len(curriculum.modules[0].lessons) == 3
+
