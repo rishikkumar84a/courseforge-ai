@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import CourseView from './pages/CourseView'
+import ProgressView from './pages/ProgressView'
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/course/:id" element={<CourseView />} />
-            {/* Will add generating/:id routes in next features*/}
+            <Route path="/generating/:id" element={<ProgressView />} />
           </Routes>
         </div>
       </main>
