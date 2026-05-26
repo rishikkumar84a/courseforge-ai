@@ -89,9 +89,9 @@ def build_orchestrator_graph():
     
     return builder.compile()
 
-def run_course_generation(topic: str) -> Dict[str, Any]:
+def run_course_generation(topic: str, course_id: str = None) -> Dict[str, Any]:
     graph = build_orchestrator_graph()
-    course_id = str(uuid.uuid4())
+    course_id = course_id or str(uuid.uuid4())
     
     initial_state = {
         "topic": topic,
