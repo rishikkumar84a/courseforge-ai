@@ -101,3 +101,35 @@ def test_content_agent_returns_lesson_content(mock_chat_groq_class):
     assert len(content.examples) == 1
     assert content.summary == "Basics of Python"
 
+
+from backend.agents.quiz_agent import run_quiz_agent, ModuleQuiz
+
+@patch("backend.agents.quiz_agent.ChatGroq")
+def test_quiz_agent_returns_5_questions(mock_chat_groq_class):
+    mock_llm_instance = MagicMock()
+    import json
+    expected_dict = {
+        "questions": [
+            {
+                "question": f"Question {i}",
+                "options": ["A", "B", "C", "D"],
+                "correct_answer": "A",
+                "explanation": "Because A is right"
+            } for i in range(1, 6)
+        ]
+    }
+    mock_llm_instance.invoke.return_value = AIMessage(content=json.dumps(expected_dict))
+    mock_chat_groq_class.return_value = mock_llm_instance
+    
+    test_research_data = {
+        "topic": "Python",
+        "key_concepts": [],
+        "facts": []
+    }
+    
+    quiz = run_quiz_agent("Module 1", "Basics", test_research_data)
+    
+    assert len(quiz.questions) == 5
+    assert quiz.questions[0].correct_answer == "A"
+    assert len(quiz.questions[0].options) == 4
+
